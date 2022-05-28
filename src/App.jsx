@@ -25,7 +25,7 @@ function App() {
         <Route path="/admin/users" element={<UserList />} />
         <Route path="/admin/transactions" element={<TransactionList />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/signup" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

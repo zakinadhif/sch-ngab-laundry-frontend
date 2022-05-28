@@ -5,8 +5,8 @@ export default function Login() {
     <div className="text-slate-800 dark:text-white dark:bg-slate-900">
       <NavBar />
       <div className="flex min-h-screen pt-12">
-        <div className="hidden md:flex justify-center items-center grow-[2]">
-          <p>Welcome to Ngab Laundry</p>
+        <div className="hidden md:flex justify-center items-center grow-[2] text-center">
+          <p>Welcome to Ngab Laundry! <br /> Please login into your account.</p>
         </div>
         <div className="flex flex-col items-center justify-center grow-[1] border-l dark:border-slate-700">
           <form className="flex flex-col w-full max-w-xs gap-1">
