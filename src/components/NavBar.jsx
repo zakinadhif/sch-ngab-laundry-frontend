@@ -4,10 +4,13 @@ export default function NavBar() {
   function toggleTheme() {
     if (localStorage.theme === "light") {
       localStorage.setItem("theme", "dark");
+      document.documentElement.classList.add("dark");
     } else if (localStorage.theme === "dark") {
       localStorage.setItem("theme", "light");
+      document.documentElement.classList.remove("dark");
     } else {
       localStorage.setItem("theme", "dark");
+      document.documentElement.classList.add("dark");
     }
   }
 

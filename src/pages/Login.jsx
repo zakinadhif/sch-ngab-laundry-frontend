@@ -2,7 +2,7 @@ import NavBar from "../components/NavBar";
 
 export default function Login() {
   return (
-    <div className="dark:text-white dark:bg-slate-900">
+    <div className="text-slate-800 dark:text-white dark:bg-slate-900">
       <NavBar />
       <div className="flex min-h-screen pt-12">
         <div className="hidden md:flex justify-center items-center grow-[2]">
