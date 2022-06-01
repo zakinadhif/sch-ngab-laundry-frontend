@@ -1,7 +1,12 @@
+import NavBar from "../components/NavBar";
+
 export default function PagePlaceHolder({ pageName }) {
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <h1 className="text-3xl font-bold">{ pageName }</h1>
+    <div className="text-slate-800 dark:text-white dark:bg-slate-900">
+      <NavBar />
+      <div className="flex flex-col justify-center w-full max-w-3xl min-h-screen pt-12 mx-auto">
+        <p className="text-2xl font-bold text-center">{pageName}</p>
+      </div>
     </div>
   );
 }

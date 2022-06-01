@@ -28,7 +28,7 @@ function TransactionCard({ customerName, cashierName, total, paymentStatus }) {
     return isPaid ? (
       <span className="bg-green-200 text-green-800 text-xs font-semibold mr-2 px-2 py-0.5 rounded dark:bg-green-300 dark:text-green-900">Paid</span>
     ) : (
-      <span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2 py-0.5 rounded dark:bg-yellow-300 dark:text-yellow-900">Pending</span>
+      <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2 py-0.5 rounded dark:bg-yellow-300 dark:text-yellow-900">Pending</span>
     );
   }
 
