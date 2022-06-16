@@ -1,19 +1,8 @@
 import { Link } from "react-router-dom";
+import { useThemeToggler } from "../contexts/Theme";
 
 export default function NavBar() {
-  function toggleTheme() {
-    if (localStorage.theme === "light") {
-      localStorage.setItem("theme", "dark");
-      document.documentElement.classList.add("dark");
-    } else if (localStorage.theme === "dark") {
-      localStorage.setItem("theme", "light");
-      document.documentElement.classList.remove("dark");
-    } else {
-      localStorage.setItem("theme", "dark");
-      document.documentElement.classList.add("dark");
-    }
-  }
-
+  const toggleTheme = useThemeToggler();
   return (
     <nav className="fixed flex items-center justify-between w-full h-12 px-3 border-b dark:border-slate-700">
       <ul className="flex items-center gap-3">
