@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+import Page404 from "./pages/Page404";
+
 import AdminDashboard from "./pages/admin/Dashboard"
 import MemberList from "./pages/admin/MemberList"
 import TransactionList from "./pages/admin/TransactionList"
@@ -31,6 +33,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
+            <Route path="*" element={<Page404 />} />
   );
 }
 
