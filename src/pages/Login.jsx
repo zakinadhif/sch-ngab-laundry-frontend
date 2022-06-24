@@ -1,6 +1,31 @@
+import {useSelector, useDispatch} from "react-redux";
+import {useNavigate} from "react-router-dom";
 import NavBar from "../components/NavBar";
+import { useLoginMutation } from "../store/slices/apiSlice";
 
 export default function Login() {
+  const dispatch = useDispatch();
+  const [login] = useLoginMutation();
+  const navigate = useNavigate();
+
+  async function onSubmit(event) {
+    event.preventDefault();
+
+    const username = event.target.username.value;
+    const password = event.target.password.value;
+
+    try {
+      await login({
+        username,
+        password
+      }).unwrap();
+
+      navigate("/admin");
+    } catch (err) {
+      window.alert("Failed to login");
+    }
+  }
+
   return (
     <div className="text-slate-800 dark:text-white dark:bg-slate-900">
       <NavBar />
@@ -9,7 +34,7 @@ export default function Login() {
           <p>Welcome to Ngab Laundry! <br /> Please login into your account.</p>
         </div>
         <div className="flex flex-col items-center justify-center grow-[1] border-l dark:border-slate-700">
-          <form className="flex flex-col w-full max-w-xs gap-1">
+          <form className="flex flex-col w-full max-w-xs gap-1" onSubmit={onSubmit}>
             <h1 className="mb-1 text-2xl font-bold">Login</h1>
             <label htmlFor="username-input" className="text-sm text-gray-500 dark:text-gray-400">
               Username

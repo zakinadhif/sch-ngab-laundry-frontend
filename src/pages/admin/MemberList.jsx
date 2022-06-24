@@ -1,38 +1,16 @@
 import NavBar from "../../components/NavBar";
+import { useGetMembersQuery } from "../../store/slices/apiSlice";
 
 export default function MemberList() {
-  const members = [
-    {
-      name: "Agus Cipto",
-      address: "Jl. Danau Magma IV",
-      gender: "Male",
-      phoneNumber: "+62 89520201321",
-    },
-    {
-      name: "Agus Budoyo",
-      address: "Jl. Danau AAAAAA",
-      gender: "Male",
-      phoneNumber: "+62 89520201221",
-    },
-    {
-      name: "Agus Suprapto",
-      address: "Jl. Danau Amazon",
-      gender: "Male",
-      phoneNumber: "+62 89520201521",
-    },
-    {
-      name: "Agus Cipto",
-      address: "Jl. Laut Api",
-      gender: "Male",
-      phoneNumber: "+62 89520201621",
-    },
-  ];
+  const { data, error, isLoading } = useGetMembersQuery();
 
   return (
     <div className="bg-slate-100 text-slate-800 dark:text-white dark:bg-slate-900">
       <NavBar />
-      <div className="flex items-start w-full max-w-4xl min-h-screen pt-16 mx-auto gap-5">
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg grow">
+      <div className="flex flex-col w-full max-w-4xl min-h-screen pt-16 mx-auto gap-5">
+        <h1 className="text-xl text-center">Members List</h1>
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+          {error ? (<p>Error!</p>) : isLoading ? (<p>Loading...</p>) : (
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
@@ -54,7 +32,7 @@ export default function MemberList() {
               </tr>
             </thead>
             <tbody>
-              {members.map((member, index) => (
+              {data.map((member, index) => (
                 <tr className="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700">
                   <th
                     scope="row"
@@ -83,6 +61,7 @@ export default function MemberList() {
               ))}
             </tbody>
           </table>
+          )}
         </div>
       </div>
     </div>
