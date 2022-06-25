@@ -13,7 +13,7 @@ export default function NavBar() {
   const [activeTab, setActiveTab] = useState("");
 
   return (
-    <nav className="fixed flex items-center w-full h-12 px-3 border-b dark:border-slate-700">
+    <nav className="fixed flex items-center w-full h-12 px-3 border-b dark:border-slate-700 z-10 backdrop-blur">
       <ul className="flex items-center gap-3 dark:text-slate-300 text-slate-800 basis-0 grow">
         <li>
           <Link
