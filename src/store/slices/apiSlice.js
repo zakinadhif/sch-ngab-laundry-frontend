@@ -12,6 +12,7 @@ export const api = createApi({
       return headers;
     }
   }),
+  tagTypes: ['Member', 'User', 'Package', 'Transaction', 'Transaction Detail'],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credential) => ({
@@ -23,127 +24,147 @@ export const api = createApi({
 
     // Member CRUD
     getMembers: builder.query({
-      query: () => '/member'
+      query: () => '/member',
+      providesTags: ['Member'],
     }),
     addNewMember: builder.mutation({
       query: (member) => ({
         url: '/member',
         method: 'POST',
-        body: member
-      })
+        body: member,
+      }),
+      invalidatesTags: ['Member'],
     }),
     updateMember: builder.mutation({
       query: ({id, newMember}) => ({
         url: `/user/${id}`,
         method: 'PUT',
         body: newMember
-      })
+      }),
+      invalidatesTags: ['Member'],
     }),
     deleteMember: builder.mutation({
       query: (id) => ({
         url: `/member/${id}`,
         method: 'DELETE'
-      })
+      }),
+      invalidatesTags: ['Member'],
     }),
 
     // Package CRUD
     getPackages: builder.query({
-      query: () => '/package'
+      query: () => '/package',
+      providesTags: ['Package'],
     }),
     addNewPackage: builder.mutation({
       query: (initialPackage) => ({
         url: '/package',
         method: 'POST',
         body: initialPackage
-      })
+      }),
+      invalidatesTags: ['Package'],
     }),
     updatePackage: builder.mutation({
       query: ({id, newPackage}) => ({
         url: `/package/${id}`,
         method: 'PUT',
         body: newPackage
-      })
+      }),
+      invalidatesTags: ['Package'],
     }),
     deletePackage: builder.mutation({
       query: (id) => ({
         url: `/package/${id}`,
         method: 'DELETE'
-      })
+      }),
+      invalidatesTags: ['Package'],
     }),
 
     // User CRUD
     getUsers: builder.query({
-      query: () => '/user'
+      query: () => '/user',
+      providesTags: ['User'],
     }),
     updateUser: builder.mutation({
       query: ({id, newUser}) => ({
         url: `/user/${id}`,
         method: 'PUT',
         body: newUser
-      })
+      }),
+      invalidatesTags: ['User'],
     }),
     addNewUser: builder.mutation({
       query: (user) => ({
         url: '/user',
         method: 'POST',
         body: user
-      })
+      }),
+      invalidatesTags: ['User'],
     }),
     deleteUser: builder.mutation({
       query: (id) => ({
         url: `/user/${id}`,
         method: 'DELETE'
-      })
+      }),
+      invalidatesTags: ['User'],
     }),
 
     // Transaction CRUD
     getTransactions: builder.query({
-      query: () => '/transaction'
+      query: () => '/transaction',
+      providesTags: ['Transaction'],
     }),
     addNewTransaction: builder.mutation({
       query: (transaction) => ({
         url: '/transaction',
         method: 'POST',
         body: transaction
-      })
+      }),
+      invalidatesTags: ['Transaction'],
     }),
     updateTransaction: builder.mutation({
       query: ({id, newUser}) => ({
         url: `/transaction/${id}`,
         method: 'PUT',
         body: newUser
-      })
+      }),
+      invalidatesTags: ['Transaction'],
     }),
     deleteTransaction: builder.mutation({
       query: (id) => ({
         url: `/transaction/${id}`,
         method: 'DELETE'
-      })
+      }),
+      invalidatesTags: ['Transaction'],
     }),
 
     // Transaction Details CRUD
     getTransactionDetails: builder.query({
-      query: () => '/transaction_detail'
+      query: () => '/transaction_detail',
+      providesTags: ['Transaction Detail'],
     }),
     addNewTransactionDetail: builder.mutation({
       query: (transactionDetail) => ({
         url: '/transaction_detail',
         method: 'POST',
         body: transactionDetail
-      })
+      }),
+      invalidatesTags: ['Transaction Detail'],
     }),
     updateTransactionDetail: builder.mutation({
       query: ({id, newTransactionDetail}) => ({
         url: `/transaction_detail/${id}`,
         method: 'PUT',
         body: newTransactionDetail
-      })
+      }),
+      invalidatesTags: ['Transaction Detail'],
     }),
     deleteTransactionDetail: builder.mutation({
       query: (id) => ({
         url: `/transaction_detail/${id}`,
         method: 'DELETE'
-      })
+      }),
+      invalidatesTags: ['Transaction Detail'],
     })
   })
 });
