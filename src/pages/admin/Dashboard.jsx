@@ -72,12 +72,12 @@ export default function Dashboard() {
 
         <div className="flex flex-col gap-5 grow basis-0">
           <Card title="Order" rightTitle="28 Mei 2022">
-            <p><span class="font-bold">Total</span>: 100</p>
-            <p><span class="font-bold">Paid</span>: 80</p>
-            <p><span class="font-bold">Unpaid</span>: 20</p>
-            <p><span class="font-bold">New</span>: 8</p>
-            <p><span class="font-bold">In Progress</span>: 20</p>
-            <p><span class="font-bold">Finished</span>: 72</p>
+            <p><span className="font-bold">Total</span>: 100</p>
+            <p><span className="font-bold">Paid</span>: 80</p>
+            <p><span className="font-bold">Unpaid</span>: 20</p>
+            <p><span className="font-bold">New</span>: 8</p>
+            <p><span className="font-bold">In Progress</span>: 20</p>
+            <p><span className="font-bold">Finished</span>: 72</p>
           </Card>
           <Card title="Members">
             <div className="flex flex-col gap-2">
