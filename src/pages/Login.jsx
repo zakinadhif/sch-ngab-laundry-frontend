@@ -44,6 +44,7 @@ export default function Login() {
               id="username-input"
               className="p-1 rounded-md ring-slate-500 ring-1 dark:bg-slate-500"
               type="text"
+              autoComplete="username"
             />
             <label htmlFor="password-input" className="text-sm text-gray-500 dark:text-gray-400">
               Password
@@ -53,6 +54,7 @@ export default function Login() {
               id="password-input"
               className="p-1 rounded-md ring-slate-500 ring-1 dark:bg-slate-500"
               type="password"
+              autoComplete="current-password"
             />
             <input
               name="submit"
