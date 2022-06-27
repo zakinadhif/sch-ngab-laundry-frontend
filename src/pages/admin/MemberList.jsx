@@ -5,18 +5,23 @@ import { useEffect, useRef, useState } from "react";
 
 function EditableMemberTableRow({ member, onFinish }) {
   const [updateMember, { isLoading }] = useUpdateMemberMutation();
-  const [draftValues, setDraftValues] = useState(member);
   const nameRef = useRef(null);
   const addressRef = useRef(null);
-  const genderRef = useRef(null);
+  const [gender, setGender] = useState(null);
   const phoneNumberRef = useRef(null);
 
   useEffect(() => {
-    setDraftValues(member);
-  }, [member]);
+    setGender(member.gender);
+  }, [member])
+
+  function handleGenderChange(event) {
+    event.preventDefault();
+
+    setGender(event.target.value);
+  }
 
   async function onSave() {
-    if (!nameRef || !addressRef || !genderRef || !phoneNumberRef) {
+    if (!nameRef || !addressRef || !gender || !phoneNumberRef) {
       console.error("Ref elements isn't initialized");
       return;
     }
@@ -24,7 +29,7 @@ function EditableMemberTableRow({ member, onFinish }) {
     const newMember = {
       name: nameRef.current.innerText,
       address: addressRef.current.innerText,
-      gender: genderRef.current.innerText,
+      gender: gender,
       phoneNumber: phoneNumberRef.current.innerText,
     };
 
@@ -51,12 +56,24 @@ function EditableMemberTableRow({ member, onFinish }) {
         suppressContentEditableWarning
         ref={nameRef}
       >
-        {draftValues.name}
+        {member.name}
       </th>
-      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={addressRef}>{draftValues.address}</td>
-      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={genderRef}>{draftValues.gender}</td>
-      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={phoneNumberRef}>{draftValues.phoneNumber}</td>
+      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={addressRef}>{member.address}</td>
+      <td className="px-6 py-4">
+        <select name="gender" value={gender} onChange={handleGenderChange} className="bg-transparent">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </td>
+      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={phoneNumberRef}>{member.phoneNumber}</td>
       <td className="px-6 py-4 text-right">
+        <button
+          href="#"
+          className="mr-1 font-medium text-gray-600 dark:text-gray-500 hover:underline"
+          onClick={onFinish}
+        >
+          Cancel
+        </button>
         <button
           href="#"
           className="mr-1 font-medium text-blue-600 dark:text-blue-500 hover:underline"
@@ -70,6 +87,8 @@ function EditableMemberTableRow({ member, onFinish }) {
 }
 
 function FrozenMemberTableRow({ member, onEdit }) {
+  const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
   return (
     <tr className="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700">
       <th
@@ -79,7 +98,7 @@ function FrozenMemberTableRow({ member, onEdit }) {
         {member.name}
       </th>
       <td className="px-6 py-4">{member.address}</td>
-      <td className="px-6 py-4">{member.gender}</td>
+      <td className="px-6 py-4">{capitalize(member.gender)}</td>
       <td className="px-6 py-4">{member.phoneNumber}</td>
       <td className="px-6 py-4 text-right">
         <button
