@@ -1,12 +1,118 @@
 import NavBar from "../../components/NavBar";
-import { useGetMembersQuery, useAddNewMemberMutation, useDeleteMemberMutation } from "../../store/slices/apiSlice";
+import { useGetMembersQuery, useAddNewMemberMutation, useDeleteMemberMutation, useUpdateMemberMutation } from "../../store/slices/apiSlice";
 import { Formik, Field, Form, ErrorMessage } from "formik";
+import { useEffect, useRef, useState } from "react";
+
+function EditableMemberTableRow({ member, onFinish }) {
+  const [updateMember, { isLoading }] = useUpdateMemberMutation();
+  const [draftValues, setDraftValues] = useState(member);
+  const nameRef = useRef(null);
+  const addressRef = useRef(null);
+  const genderRef = useRef(null);
+  const phoneNumberRef = useRef(null);
+
+  useEffect(() => {
+    setDraftValues(member);
+  }, [member]);
+
+  async function onSave() {
+    if (!nameRef || !addressRef || !genderRef || !phoneNumberRef) {
+      console.error("Ref elements isn't initialized");
+      return;
+    }
+
+    const newMember = {
+      name: nameRef.current.innerText,
+      address: addressRef.current.innerText,
+      gender: genderRef.current.innerText,
+      phoneNumber: phoneNumberRef.current.innerText,
+    };
+
+    if (!isLoading) {
+      try {
+        await updateMember({
+          id: member.id,
+          newMember: newMember
+        });
+
+        onFinish();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+
+  return (
+    <tr className="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700">
+      <th
+        scope="row"
+        className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+        contentEditable
+        suppressContentEditableWarning
+        ref={nameRef}
+      >
+        {draftValues.name}
+      </th>
+      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={addressRef}>{draftValues.address}</td>
+      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={genderRef}>{draftValues.gender}</td>
+      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={phoneNumberRef}>{draftValues.phoneNumber}</td>
+      <td className="px-6 py-4 text-right">
+        <button
+          href="#"
+          className="mr-1 font-medium text-blue-600 dark:text-blue-500 hover:underline"
+          onClick={onSave}
+        >
+          Save
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+function FrozenMemberTableRow({ member, onEdit }) {
+  return (
+    <tr className="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700">
+      <th
+        scope="row"
+        className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+      >
+        {member.name}
+      </th>
+      <td className="px-6 py-4">{member.address}</td>
+      <td className="px-6 py-4">{member.gender}</td>
+      <td className="px-6 py-4">{member.phoneNumber}</td>
+      <td className="px-6 py-4 text-right">
+        <button
+          href="#"
+          className="mr-1 font-medium text-blue-600 dark:text-blue-500 hover:underline"
+          onClick={() => onEdit()}
+        >
+          Edit
+        </button>
+        <button
+          href="#"
+          className="font-medium text-red-600 dark:text-red-500 hover:underline"
+          onClick={() => deleteMember(member.id)}
+        >
+          Remove
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+function MemberTableRow({ member }) {
+  const [isOnEdit, setIsOnEdit] = useState(false);
+
+  return isOnEdit ? <EditableMemberTableRow member={member} onFinish={() => setIsOnEdit(false)} />
+    : <FrozenMemberTableRow member={member} onEdit={() => setIsOnEdit(true)} />
+}
 
 function MemberTable({ members }) {
   const [deleteMember, { isLoading }] = useDeleteMemberMutation();
 
   return (
-    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
       <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" className="px-6 py-3">
@@ -28,32 +134,7 @@ function MemberTable({ members }) {
       </thead>
       <tbody>
         {members.map((member) => (
-          <tr className="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700" key={member.id}>
-            <th
-              scope="row"
-              className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
-            >
-              {member.name}
-            </th>
-            <td className="px-6 py-4">{member.address}</td>
-            <td className="px-6 py-4">{member.gender}</td>
-            <td className="px-6 py-4">{member.phoneNumber}</td>
-            <td className="px-6 py-4 text-right">
-              <a
-                href="#"
-                className="mr-1 font-medium text-blue-600 dark:text-blue-500 hover:underline"
-              >
-                Edit
-              </a>
-              <a
-                href="#"
-                className="font-medium text-red-600 dark:text-red-500 hover:underline"
-                onClick={(e) => {e.preventDefault(); deleteMember(member.id)}}
-              >
-                Remove
-              </a>
-            </td>
-          </tr>
+          <MemberTableRow member={member} key={member.id} />
         ))}
       </tbody>
     </table>
@@ -95,7 +176,7 @@ function MemberForm() {
             <label htmlFor="name">Name</label>
             <TextInput className="lg:row-start-2" name="name" type="text" />
             <ErrorMessage name="name" />
-            
+
             <label htmlFor="address">Address</label>
             <TextInput className="lg:row-start-2" name="address" type="text" />
             <ErrorMessage name="address" />
@@ -103,7 +184,7 @@ function MemberForm() {
             <label htmlFor="gender">Gender</label>
             <TextInput className="lg:row-start-4 " name="gender" type="text" />
             <ErrorMessage name="gender" />
-            
+
             <label htmlFor="phone">Phone Number</label>
             <TextInput className="lg:row-start-4 " name="phone" type="text" />
             <ErrorMessage name="phone" />
