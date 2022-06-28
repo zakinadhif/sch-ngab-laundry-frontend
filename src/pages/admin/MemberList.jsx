@@ -2,6 +2,9 @@ import NavBar from "../../components/NavBar";
 import { useGetMembersQuery, useAddNewMemberMutation, useDeleteMemberMutation, useUpdateMemberMutation } from "../../store/slices/apiSlice";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { useEffect, useRef, useState } from "react";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 function EditableMemberTableRow({ member, onFinish }) {
   const [updateMember, { isLoading }] = useUpdateMemberMutation();
@@ -35,10 +38,18 @@ function EditableMemberTableRow({ member, onFinish }) {
 
     if (!isLoading) {
       try {
-        await updateMember({
+        const updateMemberPromise = updateMember({
           id: member.id,
           newMember: newMember
         });
+
+        toast.promise(
+          updateMemberPromise, {
+            "pending": "Updating member",
+            "success": "Member updated",
+            "error": "Failed to update member"
+          }
+        )
 
         onFinish();
       } catch (err) {
@@ -88,6 +99,32 @@ function EditableMemberTableRow({ member, onFinish }) {
 
 function FrozenMemberTableRow({ member, onEdit }) {
   const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+  const MySwal = withReactContent(Swal);
+
+  const [deleteMember, { isLoading }] = useDeleteMemberMutation();
+
+  async function handleMemberDeletion(id) {
+    MySwal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        toast.promise(
+          deleteMember(member.id),
+          {
+            pending: "Deleting member",
+            success: "Member deletion successful",
+            error: "Failed to delete member"
+          }
+        );
+      }
+    })
+  }
 
   return (
     <tr className="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700">
@@ -111,7 +148,7 @@ function FrozenMemberTableRow({ member, onEdit }) {
         <button
           href="#"
           className="font-medium text-red-600 dark:text-red-500 hover:underline"
-          onClick={() => deleteMember(member.id)}
+          onClick={handleMemberDeletion}
         >
           Remove
         </button>
@@ -128,8 +165,6 @@ function MemberTableRow({ member }) {
 }
 
 function MemberTable({ members }) {
-  const [deleteMember, { isLoading }] = useDeleteMemberMutation();
-
   return (
     <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
       <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -176,14 +211,22 @@ function MemberForm() {
         }}
         onSubmit={async (values, { setSubmitting }) => {
           try {
-            const result = await addMember({
+            const addMemberPromise = addMember({
               name: values.name,
               address: values.address,
               gender: values.gender,
               phoneNumber: values.phone
-            }).unwrap();
-          } catch (err) {
-            window.alert("Failed to add member");
+            });
+
+            toast.promise(
+              addMemberPromise, {
+                pending: "Submitting member",
+                success: "Member submitted",
+                error: "Failed to submit member"
+              }
+            );
+
+            await addMemberPromise;
           } finally {
             setSubmitting(false);
           }

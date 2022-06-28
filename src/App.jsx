@@ -18,11 +18,21 @@ import { UserDataProvider } from "./contexts/User";
 
 import { Provider } from "react-redux";
 import { store } from "./store/store";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
     <ThemeProvider>
       <Provider store={store}>
+        <ToastContainer
+          theme="dark"
+          position="bottom-right"
+          autoClose={3000}
+          newestOnTop={true}
+          closeOnClick
+          pauseOnFocusLoss
+          draggable
+        />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />

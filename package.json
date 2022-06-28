@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.2",
+    "@sweetalert2/theme-dark": "^5.0.11",
     "axios": "^0.27.2",
     "formik": "^2.2.9",
     "jwt-decode": "^3.1.2",
@@ -16,7 +17,10 @@
     "react-dom": "^18.0.0",
     "react-redux": "^8.0.2",
     "react-router-dom": "^6.3.0",
-    "remixicon": "^2.5.0"
+    "react-toastify": "^9.0.5",
+    "remixicon": "^2.5.0",
+    "sweetalert2": "^11.4.19",
+    "sweetalert2-react-content": "^5.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
