@@ -1,6 +1,7 @@
 # sch-ngab-laundry-frontend
 
-Laundry store management UKL (Uji Kenaikan Level / Level Up Test) project at SMK Telkom Malang.
+Laundry store management UKL (Uji Kenaikan Level / Level Up Test) project at SMK Telkom Malang.  
+Check out [sch-ngab-laundry-backend](https://github.com/cowdingus/sch-ngab-laundry-backend).
 
 ## Node Modules Used
 
