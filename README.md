@@ -30,4 +30,4 @@ For more details, take a look at `package.json`
 
 ## ToDo
 
-[ ] Dashboard integration with backend
+- [ ] Dashboard integration with backend
