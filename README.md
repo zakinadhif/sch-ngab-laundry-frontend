@@ -27,3 +27,7 @@ For more details, take a look at `package.json`
 - In-place editing.
 - Caching of fetched data.
 - Dark theme.
+
+## ToDo
+
+[ ] Dashboard integration with backend
