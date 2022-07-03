@@ -44,7 +44,7 @@ function EditablePackageTableRow({ paket, onFinish }) {
         const updatePackagePromise = updatePackage({
           id: paket.id,
           newPackage: newPackage
-        });
+        }).unwrap();
 
         toast.promise(
           updatePackagePromise, {
@@ -68,10 +68,10 @@ function EditablePackageTableRow({ paket, onFinish }) {
         scope="row"
         className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
       >
-        <input value={name} onChange={handleNameChange} type="text" className="bg-transparent w-full" />
+        <input value={name} onChange={handleNameChange} type="text" className="w-full bg-transparent" />
       </th>
       <td className="px-6 py-4">
-        <input value={price} onChange={handlePriceChange} type="number" pattern="[0-9]*" inputMode="numeric" className="bg-transparent w-full" />
+        <input value={price} onChange={handlePriceChange} type="number" pattern="[0-9]*" inputMode="numeric" className="w-full bg-transparent" />
       </td>
       <td className="px-6 py-4 text-right">
         <button
@@ -110,7 +110,7 @@ function FrozenPackageTableRow({ paket, onEdit }) {
     }).then((result) => {
       if (result.isConfirmed) {
         toast.promise(
-          deletePackage(paket.id),
+          deletePackage(paket.id).unwrap(),
           {
             pending: "Deleting package",
             success: "Package deletion successful",
@@ -159,7 +159,7 @@ function PackageTableRow({ paket }) {
 
 function PackageTable({ packages }) {
   return (
-    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
+    <table className="w-full text-sm text-left text-gray-500 table-fixed dark:text-gray-400">
       <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" className="px-6 py-3">
@@ -188,7 +188,7 @@ function PackageForm() {
   const TextInput = (props) => <Field {...props} className={`dark:bg-gray-700 rounded-md py-1 px-2 bg-gray-200 ${props.className}`} />
 
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+    <div className="relative w-full overflow-x-auto shadow-md sm:rounded-lg">
       <Formik
         initialValues={{
           name: "",
@@ -202,11 +202,12 @@ function PackageForm() {
             });
 
             toast.promise(
-              addPackagePromise, {
-              pending: "Submitting package",
-              success: "Package submitted",
-              error: "Failed to submit package"
-            }
+              addPackagePromise.unwrap(),
+              {
+                pending: "Submitting package",
+                success: "Package submitted",
+                error: "Failed to submit package"
+              }
             );
 
             await addPackagePromise;
@@ -216,8 +217,8 @@ function PackageForm() {
         }}
       >
         <Form className="text-sm text-gray-500 dark:text-gray-400">
-          <h2 className="bg-gray-50 dark:bg-gray-700 px-6 py-3 text-gray-700 uppercase dark:text-gray-400 text-xs font-bold">Add New Package</h2>
-          <div className="dark:bg-gray-800 dark:border-gray-700 bg-white px-6 py-3 grid grid-cols-2 gap-x-6 gap-y-3">
+          <h2 className="px-6 py-3 text-xs font-bold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Add New Package</h2>
+          <div className="px-6 py-3 bg-white dark:bg-gray-800 dark:border-gray-700 grid grid-cols-2 gap-x-6 gap-y-3">
             <label htmlFor="name">Name</label>
             <TextInput className="lg:row-start-2" name="name" type="text" />
             <ErrorMessage name="name" />
@@ -226,7 +227,7 @@ function PackageForm() {
             <TextInput className="lg:row-start-2" name="price" type="number" pattern="[0-9]*" inputMode="numeric" />
             <ErrorMessage name="price" />
 
-            <button type="submit" className="text-slate-100 bg-purple-600 rounded-md py-2 px-5 hover:ring mb-2 mt-1 place-self-start font-medium">
+            <button type="submit" className="px-5 py-2 mt-1 mb-2 font-medium bg-purple-600 text-slate-100 rounded-md hover:ring place-self-start">
               {isLoading && (<i className="ri-loader-4-line animate-spin"></i>)} Submit
             </button>
           </div>
@@ -243,10 +244,10 @@ export default function PackageList() {
   return (
     <div className="bg-slate-100 text-slate-800 dark:text-white dark:bg-slate-900">
       <NavBar />
-      <div className="flex flex-col w-full max-w-4xl min-h-screen pt-16 mx-auto gap-5 items-center">
+      <div className="flex flex-col items-center w-full max-w-4xl min-h-screen pt-16 mx-auto gap-5">
         <h1 className="text-xl text-center">Packages List</h1>
         <PackageForm />
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+        <div className="relative w-full overflow-x-auto shadow-md sm:rounded-lg">
           {error ? (<p>Error!</p>) : isLoading ? (<p>Loading...</p>) : (
             <PackageTable packages={packages} />
           )}

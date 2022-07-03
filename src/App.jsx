@@ -26,7 +26,7 @@ function App() {
       <Provider store={store}>
         <ToastContainer
           theme="dark"
-          position="bottom-right"
+          position="top-right"
           autoClose={3000}
           newestOnTop={true}
           closeOnClick

@@ -41,7 +41,7 @@ function EditableMemberTableRow({ member, onFinish }) {
         const updateMemberPromise = updateMember({
           id: member.id,
           newMember: newMember
-        });
+        }).unwrap();
 
         toast.promise(
           updateMemberPromise, {
@@ -114,8 +114,10 @@ function FrozenMemberTableRow({ member, onEdit }) {
       confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
       if (result.isConfirmed) {
+        const deleteMemberPromise = deleteMember(member.id);
+
         toast.promise(
-          deleteMember(member.id),
+          deleteMemberPromise.unwrap(),
           {
             pending: "Deleting member",
             success: "Member deletion successful",
@@ -166,7 +168,7 @@ function MemberTableRow({ member }) {
 
 function MemberTable({ members }) {
   return (
-    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
+    <table className="w-full text-sm text-left text-gray-500 table-fixed dark:text-gray-400">
       <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" className="px-6 py-3">
@@ -201,7 +203,7 @@ function MemberForm() {
   const TextInput = (props) => <Field {...props} className={`dark:bg-gray-700 rounded-md py-1 px-2 bg-gray-200 ${props.className}`} />
 
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+    <div className="relative w-full overflow-x-auto shadow-md sm:rounded-lg">
       <Formik
         initialValues={{
           name: "",
@@ -219,7 +221,8 @@ function MemberForm() {
             });
 
             toast.promise(
-              addMemberPromise, {
+              addMemberPromise.unwrap(),
+              {
                 pending: "Submitting member",
                 success: "Member submitted",
                 error: "Failed to submit member"
@@ -233,8 +236,8 @@ function MemberForm() {
         }}
       >
         <Form className="text-sm text-gray-500 dark:text-gray-400">
-          <h2 className="bg-gray-50 dark:bg-gray-700 px-6 py-3 text-gray-700 uppercase dark:text-gray-400 text-xs font-bold">Add New Member</h2>
-          <div className="dark:bg-gray-800 dark:border-gray-700 bg-white px-6 py-3 grid grid-cols-2 gap-x-6 gap-y-3">
+          <h2 className="px-6 py-3 text-xs font-bold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Add New Member</h2>
+          <div className="px-6 py-3 bg-white dark:bg-gray-800 dark:border-gray-700 grid grid-cols-2 gap-x-6 gap-y-3">
             <label htmlFor="name">Name</label>
             <TextInput className="lg:row-start-2" name="name" type="text" />
             <ErrorMessage name="name" />
@@ -251,7 +254,7 @@ function MemberForm() {
             <TextInput className="lg:row-start-4 " name="phone" type="text" />
             <ErrorMessage name="phone" />
 
-            <button type="submit" className="text-slate-100 bg-purple-600 rounded-md py-2 px-5 hover:ring mb-2 mt-1 place-self-start font-medium">
+            <button type="submit" className="px-5 py-2 mt-1 mb-2 font-medium bg-purple-600 text-slate-100 rounded-md hover:ring place-self-start">
               {isLoading && (<i className="ri-loader-4-line animate-spin"></i>)} Submit
             </button>
           </div>
@@ -268,10 +271,10 @@ export default function MemberList() {
   return (
     <div className="bg-slate-100 text-slate-800 dark:text-white dark:bg-slate-900">
       <NavBar />
-      <div className="flex flex-col w-full max-w-4xl min-h-screen pt-16 mx-auto gap-5 items-center">
+      <div className="flex flex-col items-center w-full max-w-4xl min-h-screen pt-16 mx-auto gap-5">
         <h1 className="text-xl text-center">Members List</h1>
         <MemberForm />
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+        <div className="relative w-full overflow-x-auto shadow-md sm:rounded-lg">
           {error ? (<p>Error!</p>) : isLoading ? (<p>Loading...</p>) : (
             <MemberTable members={members} />
           )}
