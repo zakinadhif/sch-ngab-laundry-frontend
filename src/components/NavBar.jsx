@@ -13,7 +13,7 @@ export default function NavBar() {
   const [activeTab, setActiveTab] = useState("");
 
   return (
-    <nav className="fixed flex items-center w-full h-12 px-3 border-b dark:border-slate-700 z-10 backdrop-blur">
+    <nav className="fixed z-10 flex items-center w-full h-12 px-3 border-b dark:border-slate-700 backdrop-blur">
       <ul className="flex items-center gap-3 dark:text-slate-300 text-slate-800 basis-0 grow">
         <li>
           <Link
@@ -60,14 +60,14 @@ export default function NavBar() {
             <span>Cashier!</span>
           </li>
         )}
-        {user.status === "logged_out" && (
+        {(["logged_out", "error"].includes(user.status)) && (
           <li>
             <span>Not Logged In</span>
           </li>
         )}
       </ul>
       <ul className="flex items-center justify-end gap-3 basis-0 grow">
-        {user.status === "logged_out" && (
+        {(["logged_out", "error"].includes(user.status)) && (
           <>
             <li>
               <Link to="/login" className="text-md">
