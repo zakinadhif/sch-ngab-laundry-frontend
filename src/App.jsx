@@ -14,7 +14,6 @@ import PackageList from "./pages/admin/PackageList";
 import UserList from "./pages/admin/UserList";
 
 import { ThemeProvider } from "./contexts/Theme";
-import { UserDataProvider } from "./contexts/User";
 
 import { Provider } from "react-redux";
 import { store } from "./store/store";
