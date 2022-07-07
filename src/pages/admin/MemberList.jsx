@@ -208,7 +208,7 @@ function MemberForm() {
         initialValues={{
           name: "",
           address: "",
-          gender: "",
+          gender: "male",
           phone: ""
         }}
         onSubmit={async (values, { setSubmitting }) => {
@@ -247,7 +247,10 @@ function MemberForm() {
             <ErrorMessage name="address" />
 
             <label htmlFor="gender">Gender</label>
-            <TextInput className="lg:row-start-4 " name="gender" type="text" />
+            <TextInput className="lg:row-start-4 " name="gender" type="text" as="select">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </TextInput>
             <ErrorMessage name="gender" />
 
             <label htmlFor="phone">Phone Number</label>
