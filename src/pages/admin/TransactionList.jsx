@@ -7,13 +7,17 @@ import {
   useGetTransactionDetailsQuery,
   useAddNewTransactionDetailMutation,
   useUpdateTransactionDetailMutation,
-  useDeleteTransactionDetailMutation
+  useDeleteTransactionDetailMutation,
+  useGetMembersQuery,
+  useGetUsersQuery
 } from "../../store/slices/apiSlice";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { useEffect, useRef, useState } from "react";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../store/slices/userSlice";
 
 function EditableTransactionTableRow({ transaction, onFinish }) {
   const [updateTransaction, { isLoading }] = useUpdateTransactionMutation();
@@ -190,36 +194,6 @@ function FrozenTransactionTableRow({ transaction, onEdit }) {
           </button>
         </td>
       </tr>
-      <tr className="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700">
-        <th
-          scope="row"
-          className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
-        >
-          Paket yang pilih :
-        </th>
-        <td className="px-6 py-4">{transaction.cashier.username}</td>
-        <td className="px-6 py-4">{formatDate(transaction.date)}</td>
-        <td className="px-6 py-4">{formatDate(transaction.paymentDate)}</td>
-        <td className="px-6 py-4">{formatDate(transaction.deadline)}</td>
-        <td className="px-6 py-4">{getProgressStatusString(transaction.progressStatus)}</td>
-        <td className="px-6 py-4">{getPaymentStatusString(transaction.paymentStatus)}</td>
-        <td className="px-6 py-4 text-right">
-          <button
-            href="#"
-            className="mr-1 font-medium text-blue-600 dark:text-blue-500 hover:underline"
-            onClick={() => onEdit()}
-          >
-            Edit
-          </button>
-          <button
-            href="#"
-            className="font-medium text-red-600 dark:text-red-500 hover:underline"
-            onClick={handleTransactionDeletion}
-          >
-            Remove
-          </button>
-        </td>
-      </tr>
     </>
   );
 }
@@ -273,25 +247,62 @@ function TransactionTable({ transactions }) {
 
 function TransactionForm() {
   const [addTransaction, { isLoading }] = useAddNewTransactionMutation();
+  const { data: members, error, isLoading: isMembersLoading } = useGetMembersQuery();
+  const user = useSelector(selectUser);
 
   const TextInput = (props) => <Field {...props} className={`dark:bg-gray-700 rounded-md py-1 px-2 bg-gray-200 ${props.className}`} />
 
+  function getMemberSelectOptions() {
+    return isLoading ? (<option value="">"Loading..."</option>)
+      : error ? (<option value="">Error!</option>)
+      : members ? (
+        [
+          <option value=""></option>,
+          ...members.map(member => <option value={member.id}>{member.name}</option>)
+        ]
+      )
+      : null;
+  }
+
+  function getPaymentStatusOptions() {
+    return (<>
+      <option value=""></option>
+      <option value="already_paid">Paid</option>
+      <option value="not_paid_yet">Not Yet Paid</option>
+    </>)
+  }
+
+  function getProgressStatusOptions() {
+    return (<>
+      <option value=""></option>
+      <option value="new">New</option>
+      <option value="in_progress">In Progress</option>
+      <option value="done">Done</option>
+      <option value="picked_up">Picked Up</option>
+    </>)
+  }
+
   return (
-    <div className="relative w-full overflow-x-auto shadow-md sm:rounded-lg">
+    <div className="relative w-full overflow-x-auto bg-white shadow-md col-span-1 dark:bg-gray-800">
       <Formik
         initialValues={{
-          name: "",
-          address: "",
-          gender: "",
-          phone: ""
+          customerId: "",
+          orderDate: "",
+          paymentDate: "",
+          deadlineDate: "",
+          progressStatus: "",
+          paymentStatus: ""
         }}
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const addTransactionPromise = addTransaction({
-              name: values.name,
-              address: values.address,
-              gender: values.gender,
-              phoneNumber: values.phone
+              userId: user.data.id,
+              memberId: values.customerId,
+              date: values.orderDate,
+              paymentDate: values.paymentDate,
+              deadline: values.deadlineDate,
+              progressStatus: values.progressStatus,
+              paymentStatus: values.paymentStatus
             });
 
             toast.promise(
@@ -312,21 +323,35 @@ function TransactionForm() {
         <Form className="text-sm text-gray-500 dark:text-gray-400">
           <h2 className="px-6 py-3 text-xs font-bold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Add New Transaction</h2>
           <div className="px-6 py-3 bg-white dark:bg-gray-800 dark:border-gray-700 grid grid-cols-2 gap-x-6 gap-y-3">
-            <label htmlFor="name">Name</label>
-            <TextInput className="lg:row-start-2" name="name" type="text" />
-            <ErrorMessage name="name" />
+            <label htmlFor="customerId">Customer</label>
+            <TextInput className="lg:row-start-2" name="customerId" as="select">
+              {getMemberSelectOptions()}
+            </TextInput>
+            <ErrorMessage name="customerId" />
 
-            <label htmlFor="address">Address</label>
-            <TextInput className="lg:row-start-2" name="address" type="text" />
-            <ErrorMessage name="address" />
+            <label htmlFor="orderDate">Order Date</label>
+            <TextInput className="lg:row-start-2" name="orderDate" type="date" />
+            <ErrorMessage name="orderDate" />
 
-            <label htmlFor="gender">Gender</label>
-            <TextInput className="lg:row-start-4 " name="gender" type="text" />
-            <ErrorMessage name="gender" />
+            <label htmlFor="paymentDate">Payment Date</label>
+            <TextInput className="lg:row-start-4" name="paymentDate" type="date" />
+            <ErrorMessage name="paymentDate" />
 
-            <label htmlFor="phone">Phone Number</label>
-            <TextInput className="lg:row-start-4 " name="phone" type="text" />
-            <ErrorMessage name="phone" />
+            <label htmlFor="deadlineDate">Deadline</label>
+            <TextInput className="lg:row-start-4" name="deadlineDate" type="date" />
+            <ErrorMessage name="deadlineDate" />
+
+            <label htmlFor="progressStatus">Progress Status</label>
+            <TextInput className="lg:row-start-6" name="progressStatus" as="select">
+              {getProgressStatusOptions()}
+            </TextInput>
+            <ErrorMessage name="progressStatus" />
+
+            <label htmlFor="paymentStatus">Payment Status</label>
+            <TextInput className="lg:row-start-6" name="paymentStatus" as="select">
+              {getPaymentStatusOptions()}
+            </TextInput>
+            <ErrorMessage name="paymentStatus" />
 
             <button type="submit" className="px-5 py-2 mt-1 mb-2 font-medium bg-purple-600 text-slate-100 rounded-md hover:ring place-self-start">
               {isLoading && (<i className="ri-loader-4-line animate-spin"></i>)} Submit
@@ -345,14 +370,15 @@ export default function TransactionList() {
   return (
     <div className="bg-slate-100 text-slate-800 dark:text-white dark:bg-slate-900">
       <NavBar />
-      <div className="flex flex-col items-center w-full max-w-4xl min-h-screen pt-16 mx-auto gap-5">
-        <h1 className="text-xl text-center">Transactions List</h1>
-        <TransactionForm />
-        <div className="relative w-full overflow-x-auto shadow-md sm:rounded-lg">
-          {error ? (<p>Error!</p>) : isLoading ? (<p>Loading...</p>) : (
-            <TransactionTable transactions={transactions} />
-          )}
+      <div className="w-full min-h-screen pt-12 grid grid-cols-4">
+        <div className="p-3 col-span-3">
+          <div className="relative w-full overflow-x-auto shadow-md sm:rounded-lg">
+            {error ? (<p>Error!</p>) : isLoading ? (<p>Loading...</p>) : (
+              <TransactionTable transactions={transactions} />
+            )}
+          </div>
         </div>
+        <TransactionForm />
       </div>
     </div>
   );
