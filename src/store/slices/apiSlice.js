@@ -123,10 +123,10 @@ export const api = createApi({
       invalidatesTags: ['Transaction'],
     }),
     updateTransaction: builder.mutation({
-      query: ({id, newUser}) => ({
+      query: ({id, newTransaction}) => ({
         url: `/transaction/${id}`,
         method: 'PUT',
-        body: newUser
+        body: newTransaction
       }),
       invalidatesTags: ['Transaction'],
     }),

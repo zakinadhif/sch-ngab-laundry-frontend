@@ -19,35 +19,105 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../store/slices/userSlice";
 
+function formatDate(date) {
+  let newDate = new Date(date)
+  let day = newDate.getDate()
+  let month = newDate.getMonth() + 1
+  let year = newDate.getFullYear()
+  return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`
+}
+
+function getMemberSelectOptions({ data: members, error, isLoading }) {
+  return isLoading ? (<option value="">"Loading..."</option>)
+    : error ? (<option value="">Error!</option>)
+    : members ? (
+      [
+        <option value=""></option>,
+        ...members.map(member => <option value={member.id}>{member.name}</option>)
+      ]
+    )
+    : null;
+}
+
+function getUserSelectOptions({ data: users, error, isLoading }) {
+  return isLoading ? (<option value="">"Loading..."</option>)
+    : error ? (<option value="">Error!</option>)
+    : users ? (
+      [
+        <option value=""></option>,
+        ...users.map(user => <option value={user.id}>{user.username}</option>)
+      ]
+    )
+    : null;
+}
+
+function getPaymentStatusOptions() {
+  return (<>
+    <option value=""></option>
+    <option value="already_paid">Paid</option>
+    <option value="not_paid_yet">Not Yet Paid</option>
+  </>)
+}
+
+function getProgressStatusOptions() {
+  return (<>
+    <option value=""></option>
+    <option value="new">New</option>
+    <option value="in_progress">In Progress</option>
+    <option value="done">Done</option>
+    <option value="picked_up">Picked Up</option>
+  </>)
+}
+
+function getProgressStatusString(progressStatus) {
+  switch (progressStatus) {
+    case "new": return "New";
+    case "in_progress": return "In Progress";
+    case "done": return "Done";
+    case "picked_up": return "Picked Up";
+  }
+}
+
+function getPaymentStatusString(paymentStatus) {
+  switch (paymentStatus) {
+    case "already_paid": return "Paid";
+    case "not_paid_yet": return "Pending";
+  }
+}
+
 function EditableTransactionTableRow({ transaction, onFinish }) {
   const [updateTransaction, { isLoading }] = useUpdateTransactionMutation();
-  const nameRef = useRef(null);
-  const addressRef = useRef(null);
-  const [gender, setGender] = useState(null);
-  const phoneNumberRef = useRef(null);
+  const usersQuery = useGetUsersQuery();
+  const membersQuery = useGetMembersQuery();
+  const [formState, setFormState] = useState({});
 
   useEffect(() => {
-    setGender(transaction.gender);
+    setFormState({
+      ...transaction
+    })
   }, [transaction])
 
-  function handleGenderChange(event) {
+  function handleFormChange(event) {
     event.preventDefault();
 
-    setGender(event.target.value);
+    setFormState((previousState) => ({
+      ...previousState,
+      [event.target.name]: event.target.value
+    }));
   }
 
   async function onSave() {
-    if (!nameRef || !addressRef || !gender || !phoneNumberRef) {
-      console.error("Ref elements isn't initialized");
-      return;
-    }
-
     const newTransaction = {
-      name: nameRef.current.innerText,
-      address: addressRef.current.innerText,
-      gender: gender,
-      phoneNumber: phoneNumberRef.current.innerText,
+      memberId: formState.memberId,
+      userId: formState.userId,
+      date: formatDate(formState.date),
+      paymentDate: formatDate(formState.paymentDate),
+      deadline: formatDate(formState.deadline),
+      progressStatus: formState.progressStatus,
+      paymentStatus: formState.paymentStatus
     };
+
+    console.log(newTransaction);
 
     if (!isLoading) {
       try {
@@ -76,20 +146,73 @@ function EditableTransactionTableRow({ transaction, onFinish }) {
       <th
         scope="row"
         className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
-        contentEditable
-        suppressContentEditableWarning
-        ref={nameRef}
       >
-        {transaction.name}
+        <select
+          value={formState.memberId}
+          name="memberId"
+          onChange={handleFormChange}
+          className="dark:bg-gray-800 bg-gray-200"
+          >
+          {getMemberSelectOptions(membersQuery)}
+        </select>
       </th>
-      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={addressRef}>{transaction.address}</td>
       <td className="px-6 py-4">
-        <select name="gender" value={gender} onChange={handleGenderChange} className="bg-transparent">
-          <option value="male">Male</option>
-          <option value="female">Female</option>
+        <select
+          name="userId"
+          onChange={handleFormChange}
+          value={formState.userId}
+          className="dark:bg-gray-800 bg-gray-200"
+          >
+          {getUserSelectOptions(usersQuery)}
         </select>
       </td>
-      <td className="px-6 py-4" contentEditable suppressContentEditableWarning ref={phoneNumberRef}>{transaction.phoneNumber}</td>
+      <td className="px-6 py-4">
+        <input
+          type="date"
+          name="date"
+          onChange={handleFormChange}
+          value={formatDate(formState.date)} 
+          className="dark:bg-gray-800 bg-gray-200"
+          />
+      </td>
+      <td className="px-6 py-4">
+        <input
+          type="date"
+          name="paymentDate"
+          onChange={handleFormChange}
+          value={formatDate(formState.paymentDate)}
+          className="dark:bg-gray-800 bg-gray-200"
+          />
+      </td>
+      <td className="px-6 py-4">
+        <input
+          type="date"
+          name="deadline"
+          onChange={handleFormChange}
+          value={formatDate(formState.deadline)}
+          className="dark:bg-gray-800 bg-gray-200"
+          />
+      </td>
+      <td className="px-6 py-4">
+        <select
+          name="progressStatus"
+          onChange={handleFormChange}
+          value={formState.progressStatus}
+          className="dark:bg-gray-800 bg-gray-200"
+          >
+          {getProgressStatusOptions()}
+        </select>
+      </td>
+      <td className="px-6 py-4">
+        <select
+          name="paymentStatus"
+          onChange={handleFormChange}
+          value={formState.paymentStatus}
+          className="dark:bg-gray-800 bg-gray-200"
+          >
+          {getPaymentStatusOptions()}
+        </select>
+      </td>
       <td className="px-6 py-4 text-right">
         <button
           href="#"
@@ -136,30 +259,6 @@ function FrozenTransactionTableRow({ transaction, onEdit }) {
         );
       }
     })
-  }
-
-  function formatDate(date) {
-    let newDate = new Date(date)
-    let day = newDate.getDate()
-    let month = newDate.getMonth() + 1
-    let year = newDate.getFullYear()
-    return `${year}-${month}-${day}`
-  }
-
-  function getProgressStatusString(progressStatus) {
-    switch (progressStatus) {
-      case "new": return "New";
-      case "in_progress": return "In Progress";
-      case "done": return "Done";
-      case "picked_up": return "Picked Up";
-    }
-  }
-
-  function getPaymentStatusString(paymentStatus) {
-    switch (paymentStatus) {
-      case "already_paid": return "Paid";
-      case "not_paid_yet": return "Pending";
-    }
   }
 
   return (
@@ -247,40 +346,10 @@ function TransactionTable({ transactions }) {
 
 function TransactionForm() {
   const [addTransaction, { isLoading }] = useAddNewTransactionMutation();
-  const { data: members, error, isLoading: isMembersLoading } = useGetMembersQuery();
+  const membersQuery = useGetMembersQuery();
   const user = useSelector(selectUser);
 
   const TextInput = (props) => <Field {...props} className={`dark:bg-gray-700 rounded-md py-1 px-2 bg-gray-200 ${props.className}`} />
-
-  function getMemberSelectOptions() {
-    return isLoading ? (<option value="">"Loading..."</option>)
-      : error ? (<option value="">Error!</option>)
-      : members ? (
-        [
-          <option value=""></option>,
-          ...members.map(member => <option value={member.id}>{member.name}</option>)
-        ]
-      )
-      : null;
-  }
-
-  function getPaymentStatusOptions() {
-    return (<>
-      <option value=""></option>
-      <option value="already_paid">Paid</option>
-      <option value="not_paid_yet">Not Yet Paid</option>
-    </>)
-  }
-
-  function getProgressStatusOptions() {
-    return (<>
-      <option value=""></option>
-      <option value="new">New</option>
-      <option value="in_progress">In Progress</option>
-      <option value="done">Done</option>
-      <option value="picked_up">Picked Up</option>
-    </>)
-  }
 
   return (
     <div className="relative w-full overflow-x-auto bg-white shadow-md col-span-1 dark:bg-gray-800">
@@ -296,7 +365,7 @@ function TransactionForm() {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const addTransactionPromise = addTransaction({
-              userId: user.data.id,
+              userId: user.data?.id,
               memberId: values.customerId,
               date: values.orderDate,
               paymentDate: values.paymentDate,
@@ -325,7 +394,7 @@ function TransactionForm() {
           <div className="px-6 py-3 bg-white dark:bg-gray-800 dark:border-gray-700 grid grid-cols-2 gap-x-6 gap-y-3">
             <label htmlFor="customerId">Customer</label>
             <TextInput className="lg:row-start-2" name="customerId" as="select">
-              {getMemberSelectOptions()}
+              {getMemberSelectOptions(membersQuery)}
             </TextInput>
             <ErrorMessage name="customerId" />
 
